@@ -13,10 +13,14 @@ from .slide import Slide
 config = {
     "slide_title_font_size": 0.3,  # in inches
     "slide_title_font_name": "Arial",
-    "slide_title_margin_top": 0.1,  # in inches
-    "slide_title_margin_bottom": 0.2,  # in inches
-    "slide_title_margin_left": 0.1,  # in inches
-    "slide_title_margin_right": 0.1,  # in inches
+    "slide_title_top_margin": 0.1,  # in inches
+    "slide_title_bottom_margin": 0.2,  # in inches
+    "slide_title_left_margin": 0.1,  # in inches
+    "slide_title_right_margin": 0.1,  # in inches
+    "slide_left_padding": 0.1,  # in inches
+    "slide_right_padding": 0.1,  # in inches
+    "slide_top_padding": 0.1,  # in inches
+    "slide_bottom_padding": 0.1,  # in inches
 }
 
 
@@ -48,8 +52,8 @@ class Presentation:
                 # shift slide_content_height by title height
                 slide_content_height -= (
                     config["slide_title_font_size"]
-                    + config["slide_title_margin_top"]
-                    + config["slide_title_margin_bottom"]
+                    + config["slide_title_top_margin"]
+                    + config["slide_title_bottom_margin"]
                 )
 
             for rect in slide.rects.values():
@@ -66,12 +70,12 @@ class Presentation:
             if slide.title:
                 # If the slide has a title, we need to add it as a text box
                 textbox = __slide.shapes.add_textbox(
-                    Inches(config["slide_title_margin_left"]),
-                    Inches(config["slide_title_margin_top"]),
+                    Inches(config["slide_title_left_margin"]),
+                    Inches(config["slide_title_top_margin"]),
                     Inches(
                         self.presentation_width
-                        - config["slide_title_margin_left"]
-                        - config["slide_title_margin_right"]
+                        - config["slide_title_left_margin"]
+                        - config["slide_title_right_margin"]
                     ),
                     Inches(config["slide_title_font_size"]),
                 )
@@ -83,15 +87,7 @@ class Presentation:
             for rect in slide.rects.values():
                 if rect.content["type"] == "picture":
                     # Apply margin to the rect
-                    margin_left = 0.25
-                    margin_right = 0.25
-                    margin_top = 0.25
-                    margin_bottom = 0.25
-
-                    rect.left_inch += margin_left
-                    rect.top_inch += margin_top
-                    rect.width_inch -= margin_left + margin_right
-                    rect.height_inch -= margin_top + margin_bottom
+                    rect.apply_margin()
 
                     # keep aspect ratio while fitting in the bounding box
                     picture_width = Inches(rect.width_inch)
@@ -129,6 +125,7 @@ class Presentation:
                         )
 
                 if rect.content["type"] == "text":
+                    rect.apply_margin()
                     textbox = __slide.shapes.add_textbox(
                         Inches(rect.left_inch),
                         Inches(rect.top_inch),

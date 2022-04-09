@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
+from pptx.util import Inches
+
 
 def _check_bounds_validity(bounds: List[Rect]) -> None:
     for bound in bounds:
@@ -37,10 +39,10 @@ class Rect:
         top: float,
         width: float,
         height: float,
-        margin_left: float = 0.125,
-        margin_top: float = 0.125,
-        margin_right: float = 0.125,
-        margin_bottom: float = 0.125,
+        left_margin: float = 0.1,
+        top_margin: float = 0.1,
+        right_margin: float = 0.1,
+        bottom_margin: float = 0.1,
     ) -> None:
         self.char = char
         self.left = left
@@ -51,10 +53,10 @@ class Rect:
         self.top_inch: float = None
         self.width_inch: float = None
         self.height_inch: float = None
-        self.margin_left = margin_left
-        self.margin_top = margin_top
-        self.margin_right = margin_right
-        self.margin_bottom = margin_bottom
+        self.left_margin = left_margin
+        self.top_margin = top_margin
+        self.right_margin = right_margin
+        self.bottom_margin = bottom_margin
 
         self.content: Dict[str, Any] = {"type": None}
 
@@ -76,11 +78,22 @@ class Rect:
         self.width_inch = self.width / slide.n_cols * presentation_width
         self.height_inch = self.height / slide.n_rows * slide_content_height
 
+        self.left_inch += config["slide_left_padding"]
+        self.top_inch += config["slide_top_padding"]
+        self.width_inch -= config["slide_left_padding"] + config["slide_right_padding"]
+        self.height_inch -= config["slide_top_padding"] + config["slide_bottom_padding"]
+
         if slide.title:
             # shift top_inch by title height
             self.top_inch += config["slide_title_font_size"]
-            self.top_inch += config["slide_title_margin_top"]
-            self.top_inch += config["slide_title_margin_bottom"]
+            self.top_inch += config["slide_title_top_margin"]
+            self.top_inch += config["slide_title_bottom_margin"]
+
+    def apply_margin(self) -> None:
+        self.left_inch += self.left_margin
+        self.top_inch += self.top_margin
+        self.width_inch -= self.left_margin + self.right_margin
+        self.height_inch -= self.top_margin + self.bottom_margin
 
     def set_picture(
         self,
