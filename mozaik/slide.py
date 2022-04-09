@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from pptx.util import Inches
-
 
 def _check_bounds_validity(bounds: List[Rect]) -> None:
     for bound in bounds:
@@ -117,12 +115,10 @@ class Rect:
         self.content["text"] = text
         self.content["horizontal_alignment"] = horizontal_alignment
 
-    def set_table(
-        self, table_data: List[List[str]], table_size_mode: str = "auto"
-    ) -> None:
+    def set_table(self, table_data: List[List[str]], size_mode: str = "auto") -> None:
         self.content["type"] = "table"
         self.content["table_data"] = table_data
-        self.content["table_size_mode"] = table_size_mode
+        self.content["table_size_mode"] = size_mode
 
 
 class Slide:

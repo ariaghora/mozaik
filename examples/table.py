@@ -33,7 +33,7 @@ slide = Slide(
     """,
     title="An awesome slide",
 )
-slide["a"].set_table(table_data, table_size_mode="stretch")
+slide["a"].set_table(table_data, size_mode="stretch")
 slide["b"].set_text("This is the description of the table in the left.")
 slide["c"].set_text(
     "Look, we can also add an irrelevant figure on the right. "
