@@ -11,7 +11,7 @@ from .picture.picture_modes import set_picture_cover_mode, set_picture_stretch_m
 from .slide import Slide
 
 config = {
-    "slide_title_font_size": 0.3,  # in inches
+    "slide_title_font_size": 0.5,  # in inches
     "slide_title_font_name": "Arial",
     "slide_title_top_margin": 0.1,  # in inches
     "slide_title_bottom_margin": 0.2,  # in inches
@@ -95,9 +95,9 @@ class Presentation:
 
                     # Setup size for fit mode, where the picture is scaled to fit
                     # and the ratio is maintained.
-                    if picture_width > picture_height:
+                    if picture_width < picture_height:
                         picture_width = None
-                    elif picture_height > picture_width:
+                    elif picture_width > picture_height:
                         picture_height = None
 
                     # Add actual picture. By default, the width and height are
@@ -134,6 +134,55 @@ class Presentation:
                     )
                     textbox.text_frame.word_wrap = True
                     textbox.text_frame.text = rect.content["text"]
+                    from pptx.enum.text import PP_ALIGN
+
+                    if rect.content["horizontal_alignment"] == "left":
+                        textbox.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
+                    elif rect.content["horizontal_alignment"] == "center":
+                        textbox.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+                    elif rect.content["horizontal_alignment"] == "right":
+                        textbox.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
+                    elif rect.content["horizontal_alignment"] == "justify":
+                        textbox.text_frame.paragraphs[0].alignment = PP_ALIGN.JUSTIFY
+                    else:
+                        raise ValueError(
+                            f"Unknown horizontal alignment: {rect.content['horizontal_alignment']}"
+                            + "\nAvailable modes: left, center, right, justify"
+                        )
+
+                if rect.content["type"] == "table":
+                    rect.apply_margin()
+                    n_rows = len(rect.content["table_data"])
+                    n_cols = len(rect.content["table_data"][0])
+
+                    # This will set table height according to the content
+                    table_height = Inches(0)
+
+                    if rect.content["table_size_mode"] == "stretch":
+                        table_height = Inches(rect.height_inch)
+                    elif rect.content["table_size_mode"] == "auto":
+                        pass
+                    else:
+                        raise ValueError(
+                            f"Unknown table size mode: {rect.content['table_size_mode']}"
+                            + "\nAvailable modes: stretch, auto"
+                        )
+
+                    # Add table
+                    table = __slide.shapes.add_table(
+                        n_rows,
+                        n_cols,
+                        Inches(rect.left_inch),
+                        Inches(rect.top_inch),
+                        Inches(rect.width_inch),
+                        table_height,
+                    ).table
+
+                    # cell = table.cell(0, 0)
+                    # print(dir(cell))
+                    for row_idx, row in enumerate(rect.content["table_data"]):
+                        for col_idx, cell in enumerate(row):
+                            table.cell(row_idx, col_idx).text = cell
 
     def add_slide(self, slide: Slide):
         self.slides.append(slide)

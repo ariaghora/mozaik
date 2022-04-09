@@ -112,9 +112,17 @@ class Rect:
         if picture_height is not None:
             self.content["picture_height"] = picture_height
 
-    def set_text(self, text: str) -> None:
+    def set_text(self, text: str, horizontal_alignment: str = "left") -> None:
         self.content["type"] = "text"
         self.content["text"] = text
+        self.content["horizontal_alignment"] = horizontal_alignment
+
+    def set_table(
+        self, table_data: List[List[str]], table_size_mode: str = "auto"
+    ) -> None:
+        self.content["type"] = "table"
+        self.content["table_data"] = table_data
+        self.content["table_size_mode"] = table_size_mode
 
 
 class Slide:
