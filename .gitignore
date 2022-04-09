@@ -1,6 +1,7 @@
 __pycache__
+examples/*.png
+examples/*.jpg
 .DS_Store
 .vscode
 *.pptx
-*.jpg
 main.py
