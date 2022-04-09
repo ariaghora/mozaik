@@ -1,7 +1,6 @@
 """
 TODO: write docstring
 """
-
 from typing import List
 
 from pptx import Presentation as _Presentation
@@ -131,7 +130,7 @@ class Presentation:
             for col_idx, cell in enumerate(row):
                 table.cell(row_idx, col_idx).text = cell
 
-    def compile_slide_title(self, slide: Slide) -> None:
+    def compile_slide_title(self, slide: Slide, title: str) -> None:
         # If the slide has a title, we need to add it as a text box
         textbox = slide.shapes.add_textbox(
             Inches(config["slide_title_left_margin"]),
@@ -146,7 +145,7 @@ class Presentation:
         paragraph = textbox.text_frame.paragraphs[0]
         paragraph.font.size = Inches(config["slide_title_font_size"])
         paragraph.font.bold = True
-        paragraph.text = slide.title
+        paragraph.text = title
 
     def compile(self) -> None:
         """
@@ -182,7 +181,7 @@ class Presentation:
 
             # If the slide has a title, add it first
             if slide.title:
-                self.compile_slide_title(__slide)
+                self.compile_slide_title(__slide, slide.title)
 
             # Finally compile all slide contents
             for rect in slide.rects.values():
@@ -190,8 +189,10 @@ class Presentation:
                     self.compile_picture(__slide, rect)
                 elif rect.content["type"] == "text":
                     self.compile_text(__slide, rect)
-                if rect.content["type"] == "table":
+                elif rect.content["type"] == "table":
                     self.compile_table(__slide, rect)
+                elif rect.content["type"] == "object":
+                    rect.content["object"].attach(__slide, rect)
 
     def add_slide(self, slide: Slide):
         self.slides.append(slide)
