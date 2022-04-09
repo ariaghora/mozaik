@@ -2,6 +2,8 @@
 
 Create PowerPoint presentations programmatically based on the grid-based layout with Python.
 
+## Usage example
+
 ```python
 from mozaik import Slide, Presentation
 
@@ -33,9 +35,14 @@ presentation.add_slide(slide2)
 presentation.save("test.pptx")
 ```
 
+The code above will create a presentation as shown below:
+
+![](res/screenshot.png)
+
 This package is highly opinionated with very limited customizability for the sake of consistency.
 If you need more freedom, this might be not for you.
 
+## TODO
 - [x] Mosaic grid layout creation
 - [ ] Markdown support for textboxes
 - [ ] Custom object support
