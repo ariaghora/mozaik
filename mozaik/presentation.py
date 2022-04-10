@@ -6,7 +6,6 @@ from typing import List
 from pptx import Presentation as _Presentation
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches
-
 from .picture.picture_modes import set_picture_cover_mode, set_picture_stretch_mode
 from .slide import Rect, Slide
 
